@@ -2,9 +2,40 @@
 
 ## Overview
 
-LinguaBar is a language exchange social platform. Users match with native speakers of their target language and practice through real-time chat rooms with in-context translation assistance.
+LinguaBar is a global network of bars and restaurants where people connect face-to-face across borders with real-time AI translation. Each venue has smart tables equipped with tablets (camera, mic, screen). Patrons sit down and start a live video conversation with someone at another LinguaBar anywhere in the world — the software handles speech recognition, translation, and synthesis in real-time.
 
-## Architecture
+The current codebase is a web-based chat prototype — the first step toward the full vision.
+
+## Full Vision Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   TABLE TERMINAL                     │
+│  Camera + Mic + Screen (tablet)                      │
+└─────────────────────┬───────────────────────────────┘
+                      │
+        ┌─────────────▼──────────────┐
+        │    Edge Server (in-bar)     │
+        │  • AI noise cancellation    │
+        │  • Local caching            │
+        │  • Low-latency relay        │
+        └─────────────┬──────────────┘
+                      │
+        ┌─────────────▼──────────────┐
+        │       Cloud Platform        │
+        │                             │
+        │  ASR ──▶ Translation ──▶ TTS│
+        │  (Whisper)  (LLM)   (voice) │
+        │                             │
+        │  WebRTC Signaling           │
+        │  Matchmaking Engine         │
+        │  Session Management         │
+        │  Bar Admin Dashboard        │
+        │  Analytics & Billing        │
+        └─────────────────────────────┘
+```
+
+## Current Prototype Architecture
 
 ```
 ┌─────────────────┐     ┌─────────────────────────┐
@@ -22,7 +53,11 @@ LinguaBar is a language exchange social platform. Users match with native speake
 | Layer | Stack |
 |-------|-------|
 | Backend | FastAPI (Python 3.11+), uv, WebSocket |
-| Frontend | Flutter Web, Riverpod, go_router |
+| Frontend | Flutter Web/Tablet, Riverpod, go_router |
+| Video/Audio (planned) | WebRTC |
+| ASR (planned) | Whisper / Deepgram (streaming) |
+| Translation | LLM-based contextual translation |
+| TTS (planned) | Voice synthesis with speaker adaptation |
 
 ## Key Files
 
@@ -61,6 +96,17 @@ Onboarding (language selection)
   └── → Room Browser → Chat Room
 ```
 
+## Key Scenarios
+
+| Scenario | Description |
+|---|---|
+| Casual Chat | Random match with someone from another country |
+| Themed Tables | Connect around shared interests (cuisine, travel, music) |
+| Group Tables | 4-6 people from different countries at one virtual table |
+| Culture Exchange | Structured cultural discovery conversations |
+| Global Events | Themed nights across all bars in the network |
+| Business Networking | Premium professional connections |
+
 ## Development
 
 ```bash
@@ -73,9 +119,24 @@ cd flutter && flutter pub get
 flutter run -d chrome --web-port 3050
 ```
 
+## Roadmap
+
+- [x] Text chat with basic translation
+- [x] Room system and matchmaking
+- [ ] WebRTC video/audio integration
+- [ ] Streaming ASR (speech-to-text)
+- [ ] Streaming LLM translation with conversation context
+- [ ] TTS with voice adaptation
+- [ ] Live subtitles overlay on video
+- [ ] AI noise cancellation for bar environments
+- [ ] Smart matchmaking (interests, timezone, rating)
+- [ ] Tablet-optimized UI
+- [ ] Bar admin dashboard
+- [ ] Mobile companion app
+
 ## Notes
 
-- Current implementation is a prototype stub (ASR → LLM → TTS pipeline)
-- Translation uses a simple LLM call — no streaming yet
-- Real integration will connect to speech recognition, LLM, and TTS providers
+- Current implementation is a prototype (text chat + basic translation)
 - No persistent database — state is in-memory
+- Real-time pipeline (ASR → LLM → TTS) is stubbed, not yet integrated
+- Target deployment: tablets mounted on bar tables
